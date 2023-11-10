@@ -1,0 +1,193 @@
+repo_name: SaaSWorksInc/target-s3-parquet
+report_id: b4099a60c7fc7d6f88f7ab863327690f
+repo_type: Public
+timestamp: '2023-11-10T01:24:07+00:00'
+requested_by: Gabbytam
+provider: github
+branch: main
+detected_tools_count: 14
+tools:
+- name: Python
+  description: A clear and powerful object-oriented programming language, comparable
+    to Perl, Ruby, Scheme, or Java.
+  website_url: https://www.python.org
+  open_source: true
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Languages
+  image_url: https://img.stackshare.io/service/993/pUBY5pVj.png
+  detection_source: Repo Metadata
+- name: Git
+  description: Fast, scalable, distributed revision control system
+  website_url: http://git-scm.com/
+  open_source: true
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Version Control System
+  image_url: https://img.stackshare.io/service/1046/git.png
+  detection_source: Repo Metadata
+- name: GitHub Actions
+  description: Automate your workflow from idea to production
+  website_url: https://github.com/features/actions
+  open_source: false
+  hosted_saas: true
+  category: Build, Test, Deploy
+  sub_category: Continuous Integration
+  image_url: https://img.stackshare.io/service/11563/actions.png
+  detection_source: ".github/workflows/codeql-analysis.yml"
+  last_updated_by: Andre
+  last_updated_on: 2022-01-17 19:43:01.000000000 Z
+- name: PyPI
+  description: A repository of software for the Python programming language
+  website_url: https://pypi.org/
+  open_source: false
+  hosted_saas: false
+  category: Build, Test, Deploy
+  sub_category: Hosted Package Repository
+  image_url: https://img.stackshare.io/service/12572/-RIWgodF_400x400.jpg
+  detection_source: pyproject.toml
+  last_updated_by: Andre
+  last_updated_on: 2022-01-13 17:32:07.000000000 Z
+- name: Shell
+  description: A shell is a text-based terminal, used for manipulating programs and
+    files. Shell scripts typically manage program execution.
+  website_url: https://en.wikipedia.org/wiki/Shell_script
+  open_source: false
+  hosted_saas: false
+  category: Languages & Frameworks
+  sub_category: Languages
+  image_url: https://img.stackshare.io/service/4631/default_c2062d40130562bdc836c13dbca02d318205a962.png
+  detection_source: Repo Metadata
+- name: black
+  description: The uncompromising code formatter
+  package_url: https://pypi.org/black
+  version: 22.12.0
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/20099/default_029b9bbfb6be2cd34bebeda5b8e1e80a1d22441c.png
+  detection_source_url: poetry.lock
+  detection_source: pyproject.toml
+  last_updated_by: marcos
+  last_updated_on: 2022-06-14 17:18:07.000000000 Z
+- name: flake8
+  description: 'The modular source code checker: pep8, pyflakes and co'
+  package_url: https://pypi.org/flake8
+  version: 3.9.2
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19920/default_c8be5290cb8d8a8b578535a2c6475d1057ff4ea4.png
+  detection_source_url: poetry.lock
+  detection_source: pyproject.toml
+  last_updated_by: Andre
+  last_updated_on: 2022-01-13 17:32:07.000000000 Z
+- name: isort
+  description: A Python utility / library to sort Python imports
+  package_url: https://pypi.org/isort
+  version: 5.11.4
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/20117/default_9cf91bfbbfb266fc12a914cdc09d9e4b55c773bb.png
+  detection_source_url: poetry.lock
+  detection_source: pyproject.toml
+  last_updated_by: Andre
+  last_updated_on: 2022-01-13 17:32:07.000000000 Z
+- name: mypy
+  description: Optional static typing for Python
+  package_url: https://pypi.org/mypy
+  version: '0.991'
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/20219/default_d4dd0466552a9776ca8535b869e22a3362790c94.png
+  detection_source_url: poetry.lock
+  detection_source: pyproject.toml
+  last_updated_by: lorransr
+  last_updated_on: 2023-01-11 14:00:11.000000000 Z
+- name: pandas
+  description: Powerful data structures for data analysis
+  package_url: https://pypi.org/pandas
+  version: 1.5.1
+  license: BSD-3-Clause
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19837/default_85689b353a3a9409328e253ea28d859d29151e0c.png
+  detection_source_url: poetry.lock
+  detection_source: pyproject.toml
+  last_updated_by: lorransr
+  last_updated_on: 2023-01-11 14:00:11.000000000 Z
+- name: pydocstyle
+  description: Python docstring style checker
+  package_url: https://pypi.org/pydocstyle
+  version: 6.2.3
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/20507/default_0a4b1ff56fc84a423341df2dee7f169b1171f64d.png
+  detection_source_url: poetry.lock
+  detection_source: pyproject.toml
+  last_updated_by: Andre
+  last_updated_on: 2022-01-13 17:32:07.000000000 Z
+- name: pytest
+  description: 'Pytest: simple powerful testing with Python'
+  package_url: https://pypi.org/pytest
+  version: 6.2.5
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19843/default_4604ff5dcb7f4d9c7b3833591c2142493951b19c.png
+  detection_source_url: poetry.lock
+  detection_source: pyproject.toml
+  last_updated_by: Andre
+  last_updated_on: 2022-01-13 17:32:07.000000000 Z
+- name: requests
+  description: Python HTTP for Humans
+  package_url: https://pypi.org/requests
+  version: 2.28.1
+  license: Apache-2.0
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19826/default_d7c684bf2673f008a9f02ac93901229297a22d7e.png
+  detection_source_url: poetry.lock
+  detection_source: pyproject.toml
+  last_updated_by: Andre
+  last_updated_on: 2022-01-13 17:32:07.000000000 Z
+  vulnerabilities:
+  - name: Unintended leak of Proxy-Authorization header in requests
+    cve_id: CVE-2023-32681
+    cve_url: https://github.com/advisories/GHSA-j8r2-6x86-q33q
+    detected_date: May 23
+    severity: moderate
+    first_patched: 2.31.0
+- name: tox
+  description: Tox is a generic virtualenv management and test command line tool
+  package_url: https://pypi.org/tox
+  version: 3.28.0
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19991/default_f2178576c59f6927768590a32b6ef092891768c5.png
+  detection_source_url: poetry.lock
+  detection_source: pyproject.toml
+  last_updated_by: Andre
+  last_updated_on: 2022-01-13 17:32:07.000000000 Z
