@@ -12,7 +12,8 @@ license = "Apache 2.0"
 [tool.poetry.dependencies]
 python = "<3.11,>=3.8"
 requests = "^2.25.1"
-singer-sdk = "^0.17.0"
+singer-sdk = { git = "https://github.com/SaaSWorksInc/meltano-sdk.git", branch = "float-to-decimal" }
+
 awswrangler = "2.19.0"
 pandas = "1.5.1"
 
