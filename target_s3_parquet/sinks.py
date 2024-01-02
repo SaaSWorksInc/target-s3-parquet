@@ -97,6 +97,7 @@ class S3ParquetSink(BatchSink):
         df["_sdc_started_at"] = STARTED_AT.timestamp()
 
         current_schema = generate_current_target_schema(self._get_glue_schema())
+        self.logger.info(f"the Current Schema: {current_schema}")
         tap_schema = generate_tap_schema(
             self.schema["properties"], only_string=self.config.get("stringify_schema")
         )
