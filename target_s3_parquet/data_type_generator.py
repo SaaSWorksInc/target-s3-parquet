@@ -1,3 +1,4 @@
+import pandas as pd
 from target_s3_parquet.sanitizer import get_valid_types, type_from_anyof
 
 
@@ -32,10 +33,12 @@ def coerce_types(name, type, format=None, description=None):
 
 
 def generate_current_target_schema(schema):
-    if schema.empty:
-        return {}
-    return schema.set_index(schema.columns[0])["Type"].to_dict()
-
+    if isinstance(schema, pd.DataFrame):
+        if schema.empty:
+            return {}
+        return schema.set_index(schema.columns[0])["Type"].to_dict()
+    
+    return schema
 
 def generate_tap_schema(schema, level=0, only_string=False):
     field_definitions = {}

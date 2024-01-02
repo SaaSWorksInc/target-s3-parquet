@@ -36,7 +36,7 @@ class S3ParquetSink(BatchSink):
         super().__init__(target, stream_name, schema, key_properties)
 
         self.store_with_glue = self.config.get("store_with_glue")
-        self._glue_schema = self._get_glue_schema()
+        #self._glue_schema = self._get_glue_schema()
         self._schema = self._get_schema()
 
     def _get_glue_schema(self):
@@ -61,27 +61,25 @@ class S3ParquetSink(BatchSink):
         #path = f"{self.config.get('s3_path')}/{self.stream_name}"
         path = f"{self.config.get('s3_path')}/{self.config.get('athena_database')}/{self.stream_name}"
 
-
+        # NOTE: this will not pick up on the partition columns that is within the path
         metadata = wr.s3.read_parquet_metadata(
             path=path,
             dataset=True,
             sampling=0.25,
-            dtype={'_sdc_started_at': 'double'}
-        )
+            dtype={'_sdc_started_at': 'double'},
+            s3_additional_kwargs={'Metadata': {'_sw_account_id': 'string'}}
+        ) # returns Tuple({column_name: column_type}, {partition_column: type})
+        # if it reads a path that does not exist, it returns ({}, None)
+
         self.logger.info(f"look at metadata to see if it contains schema: {metadata}")
         # combine the tuples
-        schema = {k: v for d in metadata for k, v in d.items()}
+        if metadata[0]:
+            schema = metadata[0]
 
-        self.logger.info(f"look at the merged schema: {schema}")
+            if metadata[1]:
+                schema = {**schema, **metadata[1]}
+            self.logger.info(f"look at the merged schema: {schema}")
 
-        # also test what happens when there is no file
-        test_md = wr.s3.read_parquet_metadata(
-            path=f"{path}/test",
-            dataset=True,
-            sampling=0.25,
-            dtype={'_sdc_started_at': 'double'}
-        )
-        self.logger.info(f"test a non existing file: {test_md}")
         return schema
 
 
@@ -95,10 +93,18 @@ class S3ParquetSink(BatchSink):
         # Path(context["file_path"]).unlink()  # Delete local copy
 
         df = DataFrame(context["records"])
+        #partition_cols = ["_sdc_started_at"]
 
+        # support addition of partition columns
+        # if self.config.get("additional_partitions"):
+        #     for key, value in self.config.get("additional_partitions").items():
+        #         df[key] = value
+        #         partition_cols.append(key)
+    
         df["_sdc_started_at"] = STARTED_AT.timestamp()
 
-        current_schema = generate_current_target_schema(self._get_glue_schema())
+        #current_schema = generate_current_target_schema(self._get_glue_schema())
+        current_schema = generate_current_target_schema(self._get_schema())
         self.logger.info(f"the Current Schema: {current_schema}")
         tap_schema = generate_tap_schema(
             self.schema["properties"], only_string=self.config.get("stringify_schema")
