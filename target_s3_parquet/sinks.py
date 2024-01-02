@@ -37,6 +37,7 @@ class S3ParquetSink(BatchSink):
 
         self.store_with_glue = self.config.get("store_with_glue")
         self._glue_schema = self._get_glue_schema()
+        self._schema = self._get_schema()
 
     def _get_glue_schema(self):
 
@@ -55,6 +56,7 @@ class S3ParquetSink(BatchSink):
         schema = DataFrame()
 
         if self.config.get("store_with_glue"):
+            self.logger.info("Store with glue running, looking for glue catalog")
             catalog_params = {
                 "database": self.config.get("athena_database"),
                 "table": self.stream_name,
@@ -64,17 +66,19 @@ class S3ParquetSink(BatchSink):
                 schema = wr.catalog.table(**catalog_params)
                 self.logger.info(f"Found schema in Glue: {schema}")
 
-        else:
+        #else:
             # want to read the schema from a parquet file 
             #awswrangler.s3.read_parquet_metadata
-            path = f"{self.config.get('s3_path')}/{self.stream_name}"
+            #path = f"{self.config.get('s3_path')}/{self.stream_name}"
+        path = f"{self.config.get('s3_path')}/{self.config.get('athena_database')}/{self.stream_name}"
 
-            metadata = wr.s3.read_parquet_metadata(
-                path=path,
-                dataset=True,
-                sampling=0.25
-            )
-            self.logger.info(f"look at metadata to see if it contains schema: {metadata}")
+
+        metadata = wr.s3.read_parquet_metadata(
+            path=path,
+            dataset=True,
+            sampling=0.25
+        )
+        self.logger.info(f"look at metadata to see if it contains schema: {metadata}")
 
         return schema
 
