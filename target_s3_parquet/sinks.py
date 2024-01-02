@@ -40,15 +40,13 @@ class S3ParquetSink(BatchSink):
         self._schema = self._get_schema()
 
     def _get_glue_schema(self):
+        catalog_params = {
+            "database": self.config.get("athena_database"),
+            "table": self.stream_name,
+        }
 
-        if self.config.get("store_with_glue"):
-            catalog_params = {
-                "database": self.config.get("athena_database"),
-                "table": self.stream_name,
-            }
-
-            if wr.catalog.does_table_exist(**catalog_params):
-                return wr.catalog.table(**catalog_params)
+        if wr.catalog.does_table_exist(**catalog_params):
+            return wr.catalog.table(**catalog_params)
         else:
             return DataFrame()
         
@@ -56,30 +54,34 @@ class S3ParquetSink(BatchSink):
         schema = DataFrame()
 
         if self.config.get("store_with_glue"):
-            self.logger.info("Store with glue running, looking for glue catalog")
-            catalog_params = {
-                "database": self.config.get("athena_database"),
-                "table": self.stream_name,
-            }
+            return self._get_glue_schema()
 
-            if wr.catalog.does_table_exist(**catalog_params):
-                schema = wr.catalog.table(**catalog_params)
-                self.logger.info(f"Found schema in Glue: {schema}")
-
-        #else:
-            # want to read the schema from a parquet file 
-            #awswrangler.s3.read_parquet_metadata
-            #path = f"{self.config.get('s3_path')}/{self.stream_name}"
+        # want to read the schema from a parquet file 
+        #awswrangler.s3.read_parquet_metadata
+        #path = f"{self.config.get('s3_path')}/{self.stream_name}"
         path = f"{self.config.get('s3_path')}/{self.config.get('athena_database')}/{self.stream_name}"
 
 
         metadata = wr.s3.read_parquet_metadata(
             path=path,
             dataset=True,
-            sampling=0.25
+            sampling=0.25,
+            dtype={'_sdc_started_at': 'double'}
         )
         self.logger.info(f"look at metadata to see if it contains schema: {metadata}")
+        # combine the tuples
+        schema = {k: v for d in metadata for k, v in d.items()}
 
+        self.logger.info(f"look at the merged schema: {schema}")
+
+        # also test what happens when there is no file
+        test_md = wr.s3.read_parquet_metadata(
+            path=f"{path}/test",
+            dataset=True,
+            sampling=0.25,
+            dtype={'_sdc_started_at': 'double'}
+        )
+        self.logger.info(f"test a non existing file: {test_md}")
         return schema
 
 
