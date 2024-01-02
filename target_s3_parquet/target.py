@@ -23,7 +23,8 @@ class TargetS3Parquet(Target):
             th.StringType,
             required=False,
         ),
-        th.Property("athena_database", th.StringType, required=True),
+        th.Property("store_with_glue", th.BooleanType, required=False, default=True),
+        th.Property("athena_database", th.StringType, required=False),
         th.Property("add_record_metadata", th.BooleanType, default=None),
         th.Property("stringify_schema", th.BooleanType, default=None),
     ).to_dict()

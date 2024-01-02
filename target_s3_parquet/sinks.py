@@ -35,19 +35,49 @@ class S3ParquetSink(BatchSink):
     ) -> None:
         super().__init__(target, stream_name, schema, key_properties)
 
+        self.store_with_glue = self.config.get("store_with_glue")
         self._glue_schema = self._get_glue_schema()
 
     def _get_glue_schema(self):
 
-        catalog_params = {
-            "database": self.config.get("athena_database"),
-            "table": self.stream_name,
-        }
+        if self.config.get("store_with_glue"):
+            catalog_params = {
+                "database": self.config.get("athena_database"),
+                "table": self.stream_name,
+            }
 
-        if wr.catalog.does_table_exist(**catalog_params):
-            return wr.catalog.table(**catalog_params)
+            if wr.catalog.does_table_exist(**catalog_params):
+                return wr.catalog.table(**catalog_params)
         else:
             return DataFrame()
+        
+    def _get_schema(self):
+        schema = DataFrame()
+
+        if self.config.get("store_with_glue"):
+            catalog_params = {
+                "database": self.config.get("athena_database"),
+                "table": self.stream_name,
+            }
+
+            if wr.catalog.does_table_exist(**catalog_params):
+                schema = wr.catalog.table(**catalog_params)
+                self.logger.info(f"Found schema in Glue: {schema}")
+
+        else:
+            # want to read the schema from a parquet file 
+            #awswrangler.s3.read_parquet_metadata
+            path = f"{self.config.get('s3_path')}/{self.stream_name}"
+
+            metadata = wr.s3.read_parquet_metadata(
+                path=path,
+                dataset=True,
+                sampling=0.25
+            )
+            self.logger.info(f"look at metadata to see if it contains schema: {metadata}")
+
+        return schema
+
 
     max_size = 10000  # Max records to write in one batch
 
@@ -78,7 +108,11 @@ class S3ParquetSink(BatchSink):
 
         self.logger.debug(f"DType Definition: {dtype}")
 
-        full_path = f"{self.config.get('s3_path')}/{self.config.get('athena_database')}/{self.stream_name}"
+        athena_database_folder = ""
+        if self.config.get("store_with_glue"):
+            athena_database_folder = f'/{self.config.get("athena_database")}'
+
+        full_path = f"{self.config.get('s3_path')}{athena_database_folder}/{self.stream_name}"
 
         wr.s3.to_parquet(
             df=df,
@@ -86,10 +120,10 @@ class S3ParquetSink(BatchSink):
             compression="gzip",
             dataset=True,
             path=full_path,
-            database=self.config.get("athena_database"),
-            table=self.stream_name,
+            database=self.config.get("athena_database") if self.store_with_glue else None,
+            table=self.stream_name if self.store_with_glue else None,
             mode="append",
-            partition_cols=["_sdc_started_at"],
+            partition_cols=["_sdc_started_at"], # should we make this optional to pass partitions in?
             schema_evolution=True,
             dtype=dtype,
         )
