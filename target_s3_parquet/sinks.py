@@ -54,8 +54,8 @@ class S3ParquetSink(BatchSink):
         schema = DataFrame()
 
         if self.config.get("store_with_glue"):
-            return self._get_glue_schema()
-
+            #return self._get_glue_schema()
+            schema = self._get_glue_schema()
         # want to read the schema from a parquet file 
         #awswrangler.s3.read_parquet_metadata
         #path = f"{self.config.get('s3_path')}/{self.stream_name}"
