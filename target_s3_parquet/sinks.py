@@ -126,19 +126,23 @@ class S3ParquetSink(BatchSink):
 
         full_path = self._build_full_path()
 
-        wr.s3.to_parquet(
-            df=df,
-            index=False,
-            compression="gzip",
-            dataset=True,
-            path=full_path,
-            database=self.config.get("athena_database") if self.store_with_glue else None,
-            table=self.stream_name if self.store_with_glue else None,
-            mode="append",
-            partition_cols=["_sdc_started_at"], # should we make this optional to pass partitions in?
-            schema_evolution=True,
-            dtype=dtype,
-        )
+        try:
+            wr.s3.to_parquet(
+                df=df,
+                index=False,
+                compression="gzip",
+                dataset=True,
+                path=full_path,
+                database=self.config.get("athena_database") if self.store_with_glue else None,
+                table=self.stream_name if self.store_with_glue else None,
+                mode="append",
+                partition_cols=["_sdc_started_at"], # should we make this optional to pass partitions in?
+                schema_evolution=True,
+                dtype=dtype,
+            )
+        except:
+            self.logger.info(f"Failing on records with df:\n {df} \n and dtype: {dtype}")
+            raise Exception("fail to write to parquet")
 
         self.logger.info(f"Uploaded {len(context['records'])}")
 

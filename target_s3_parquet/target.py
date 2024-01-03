@@ -24,7 +24,7 @@ class TargetS3Parquet(Target):
             required=False,
         ),
         th.Property("store_with_glue", th.BooleanType, required=False, default=True),
-        th.Property("athena_database", th.StringType, description="Required if store_with_glue is True", required=False),
+        th.Property("athena_database", th.StringType, description="Required if store_with_glue is True", required=False, default=None),
         #th.Property("additional_partitions", th.ObjectType, description="Additional partitions", required=False),
         th.Property("add_record_metadata", th.BooleanType, default=None),
         th.Property("stringify_schema", th.BooleanType, default=None),
