@@ -54,25 +54,21 @@ class S3ParquetSink(BatchSink):
         schema = DataFrame()
 
         if self.config.get("store_with_glue"):
-            #return self._get_glue_schema()
-            schema = self._get_glue_schema()
-        # want to read the schema from a parquet file 
-        #awswrangler.s3.read_parquet_metadata
-        #path = f"{self.config.get('s3_path')}/{self.stream_name}"
-        path = f"{self.config.get('s3_path')}/{self.config.get('athena_database')}/{self.stream_name}"
+            self.logger.info('Store with Glue is True, using Glue Schema')
+            return self._get_glue_schema()
 
+        self.logger.info('Store with Glue is False, looking to parquet metadata')
+        path = self._build_full_path()
+        self.logger.info(f"looking at path: {path}")
         # NOTE: this will not pick up on the partition columns that is within the path
         metadata = wr.s3.read_parquet_metadata(
             path=path,
             dataset=True,
             sampling=0.25,
             dtype={'_sdc_started_at': 'double'},
-            s3_additional_kwargs={'Metadata': {'_sw_account_id': 'string'}}
         ) # returns Tuple({column_name: column_type}, {partition_column: type})
         # if it reads a path that does not exist, it returns ({}, None)
 
-        self.logger.info(f"look at metadata to see if it contains schema: {metadata}")
-        # combine the tuples
         if metadata[0]:
             schema = metadata[0]
 
@@ -82,6 +78,13 @@ class S3ParquetSink(BatchSink):
 
         return schema
 
+    def _build_full_path(self):
+        athena_database_folder = ""
+
+        if self.config.get("athena_database"):
+            athena_database_folder = f'/{self.config.get("athena_database")}'
+
+        return f"{self.config.get('s3_path')}{athena_database_folder}/{self.stream_name}"
 
     max_size = 10000  # Max records to write in one batch
 
@@ -121,11 +124,7 @@ class S3ParquetSink(BatchSink):
 
         self.logger.debug(f"DType Definition: {dtype}")
 
-        athena_database_folder = ""
-        if self.config.get("store_with_glue"):
-            athena_database_folder = f'/{self.config.get("athena_database")}'
-
-        full_path = f"{self.config.get('s3_path')}{athena_database_folder}/{self.stream_name}"
+        full_path = self._build_full_path()
 
         wr.s3.to_parquet(
             df=df,

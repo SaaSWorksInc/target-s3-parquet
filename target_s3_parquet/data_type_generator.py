@@ -33,12 +33,12 @@ def coerce_types(name, type, format=None, description=None):
 
 
 def generate_current_target_schema(schema):
-    if isinstance(schema, pd.DataFrame):
-        if schema.empty:
-            return {}
-        return schema.set_index(schema.columns[0])["Type"].to_dict()
+    if not isinstance(schema, pd.DataFrame):
+        return schema
     
-    return schema
+    if schema.empty:
+        return {}
+    return schema.set_index(schema.columns[0])["Type"].to_dict()
 
 def generate_tap_schema(schema, level=0, only_string=False):
     field_definitions = {}
