@@ -7,6 +7,10 @@ def build_struct_type(attributes, level):
 
     stringfy_data_types = ", ".join([f"{k}:{v}" for k, v in object_data_types.items()])
 
+    if stringfy_data_types == "" or not stringfy_data_types:
+        print('unable to build struct because properties are empty', attributes)
+        return "string"
+
     return f"struct<{stringfy_data_types}>"
 
 
